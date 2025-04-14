@@ -111,6 +111,8 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    glfwSwapInterval(1);
+
     if (glewInit() != GLEW_OK) {
         std::cout << "GLEW error" << std::endl;
     }
@@ -172,6 +174,13 @@ int main(void)
     unsigned int shader = createShader(source.VertexShader, source.FragmentShader);
     glUseProgram(shader);
 
+    int uniformLocation = glGetUniformLocation(shader, "u_Color");
+    ASSERT(uniformLocation != -1);
+    glUniform4f(uniformLocation, 0.0f, 0.2f, 1.0f, 1.0f);
+
+    float red_Value = 1.0f;
+    float red_increamentValue = 0.005f;
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -179,7 +188,17 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         //glDrawArrays(GL_TRIANGLES, 0, 6);
+        glUniform4f(uniformLocation, red_Value, 0.2f, 1.0f, 1.0f);
         GLLogCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+        if (red_Value > 1.0f) {
+            red_increamentValue = -0.005f;
+        } 
+        if (red_Value < 0.0f) {
+            red_increamentValue = 0.005f;
+        }
+
+        red_Value += red_increamentValue;
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
